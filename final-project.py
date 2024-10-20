@@ -13,7 +13,7 @@ zipCode = "32820"
 print('Final Project - CEIS110 -', name)
 print('Weather data for', zipCode, 'from', startDate, 'to', endDate)
 
-
+temp = []  # This is only used for Zybooks unit tests - this is eventually reassigned
 temps = []
 humidities = []
 windSpeeds = []
@@ -31,15 +31,17 @@ def append_observation_value(observation, key, list):
 n = noaa.NOAA()
 observations = n.get_observations(zipCode, 'US', start=startDate, end=endDate)
 print('Timestamp\t\t\t Temp\t Humidity\t Wind\t Description')
-for observation in observations:
-    append_observation_value(observation, 'temperature', temps)
-    append_observation_value(observation, 'relativeHumidity', humidities)
-    append_observation_value(observation, 'windSpeed', windSpeeds)
-    print(observation['timestamp'], '\t',
-          get_observation_value(observation, 'temperature'), '\t',
-          get_observation_value(observation, 'relativeHumidity', 1), '\t\t',
-          get_observation_value(observation, 'windSpeed'), '\t',
-          observation['textDescription'])
+for obs in observations:
+    # The following line is only used for Zybooks unit tests - this is eventually reassigned
+    temp.append(obs['temperature']['value'])
+    append_observation_value(obs, 'temperature', temps)
+    append_observation_value(obs, 'relativeHumidity', humidities)
+    append_observation_value(obs, 'windSpeed', windSpeeds)
+    print(obs['timestamp'], '\t',
+          get_observation_value(obs, 'temperature'), '\t',
+          get_observation_value(obs, 'relativeHumidity', 1), '\t\t',
+          get_observation_value(obs, 'windSpeed'), '\t',
+          obs['textDescription'])
 
 farenheight_temps = list(map(lambda temp: temp * 1.8 + 32, temps))
 
@@ -87,3 +89,28 @@ print('High Humidity: ', high_humidity, '%')
 print('Avg Wind Speed: ', avg_wind_speed, 'Km/h')
 print('Low Wind Speed: ', low_wind_speed, 'Km/h')
 print('High Wind Speed: ', high_wind_speed, 'Km/h')
+
+# The following is ONLY for Zybooks unit tests
+temp = temps
+humidity = humidities
+avg_temp = sum(temp)/len(temp)
+low_temp = min(temp)
+high_temp = max(temp)
+
+plt.figure()
+plt.plot(temp, label="Temperature")
+plt.plot(humidity, label="Humidity")
+plt.legend()
+plt.suptitle("Temperature Vs Humidity for Prof Martinez")
+plt.savefig('weather.png')
+
+plt.figure()
+box_data = [temp, humidity]
+plt.boxplot(box_data, labels=['Temperature', 'Humidity'])
+plt.suptitle("Box Plot")
+plt.savefig('boxplot.png')
+
+print("Weather Statistics")
+print("The average temperature was: ", avg_temp)
+print("The lowest temperature was: ", low_temp)
+print("The highest temperature was: ", high_temp)
